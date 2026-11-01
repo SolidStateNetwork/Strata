@@ -14,7 +14,7 @@
 | **Zielplattformen** | **Linux** (Wayland / X11) & **Windows** (Windows 10 / 11) |
 | **Lizenz** | **GNU General Public License v3.0 (GPL-3.0)** |
 | **Tech-Stack** | **Tauri v2 (Rust)** + **React / TypeScript / Tailwind CSS** + **`rclone rcd` Engine** |
-| **Aktuelle Phase** | 🟢 **Phase 0 abgeschlossen** $\rightarrow$ Bereit für **Phase 1 (Core Workspace & Modern UI Prototype)** |
+| **Aktuelle Phase** | 🟢 **Phase 1 abgeschlossen** $\rightarrow$ Bereit für **Phase 2 (Rclone Engine Bridge, OS-Keyring & Provider-Onboarding)** |
 
 ---
 
@@ -23,8 +23,8 @@
 | Modul-ID | Komponente | Pfad / Bereich | Beschreibung | Status |
 | :--- | :--- | :--- | :--- | :---: |
 | **`ARCH-LEXICON`** | **Architektur- & KI-Lexikon** | `architecture/`, `memory/`, `AGENTS.md` | Vollständige Spezifikation (`00`–`04`), Roadmap, Blackbox & Public Pre-Commit Guardrails | 🟢 `READY` |
-| **`UI-SHELL`** | **Modernes Desktop-Cockpit** | `src/components/layout/` | 3-Spalten-Layout, Dark/Light-Theme, Sidebar, Storage-Cards & System-Tray-Popover | ⚪ `PLANNED (M1)` |
-| **`UI-EXPLORER`** | **Visueller Ordnerbaum & 3-Modi-Switch** | `src/components/explorer/` | Selektiver Sync-Baum, Switch (`Stream` \| `Hybrid Pin` \| `Full Mirror`), Status-Badges | ⚪ `PLANNED (M1)` |
+| **`UI-SHELL`** | **Modernes Desktop-Cockpit** | `src/components/layout/` | 3-Spalten-Layout, Dark/Light-Theme, Sidebar, Storage-Cards & Inspector-Drawer | 🟢 `READY` |
+| **`UI-EXPLORER`** | **Visueller Ordnerbaum & 3-Modi-Switch** | `src/components/explorer/`, `modes/` | Selektiver Sync-Baum, Switch (`Stream` \| `Hybrid Pin` \| `Full Mirror`), Status-Badges | 🟢 `READY` |
 | **`CORE-RCD`** | **Rclone RC Daemon Controller** | `src-tauri/src/engine/` | Persistenter `rclone rcd` JSON-RPC Client (Unix Socket / Auth Loopback) | ⚪ `PLANNED (M2)` |
 | **`CORE-SECURITY`** | **OS-Keyring & 1-Click Crypt** | `src-tauri/src/security/` | Verschlüsselung der `rclone.conf` via OS-Keyring + Zero-Knowledge `crypt`-Assistent | ⚪ `PLANNED (M2)` |
 | **`MODE-STREAM`** | **Virtual Drive (Lightweight Mount)** | `src-tauri/src/mount/` | `FUSE3` (Linux) & `WinFsp` Laufwerks-Mount (`Z:` auf Windows) inkl. VFS-Cache-Manager | ⚪ `PLANNED (M3)` |

@@ -34,6 +34,20 @@
 
 ## 📜 Chronologisches Logbuch (Neueste zuerst)
 
+### [BB-002] 2026-11-01 01:22 (CET) – [UI-SHELL / UI-EXPLORER / CORE-RCD] Phase 1: Initialisierung des Tauri v2 Monorepos & 3-Spalten Desktop-Cockpits
+- **Akteur:** Antigravity AI (Gemini 4 Argon)
+- **Typ:** `ARCHITECTURE` | `FEATURE` | `UI` | `ENGINE`
+- **Betroffene Module:** `UI-SHELL`, `UI-EXPLORER`, `CORE-RCD`, `MODE-STREAM`, `MODE-MIRROR`, `MODE-HYBRID`
+- **Ziel / Hintergrund:** Vollständige Initialisierung des Projektordners gemäß [`architecture/01-tech-stack-and-monorepo.md`](../architecture/01-tech-stack-and-monorepo.md) und Umsetzung von Phase 1 (`M1.1`–`M1.3`).
+- **Durchgeführte Schritte:**
+  1. **Frontend (`src/`, Vite + React 19 + TypeScript + Tailwind CSS + Zustand):**
+     - Typisierte Tauri IPC-Brücke (`src/lib/ipc.ts`) und zentralen reaktiven Store (`src/stores/useStrataStore.ts`) erstellt.
+     - 3-Spalten-Cockpit implementiert: `Sidebar.tsx` (Cloud-Remotes, Speicherbalken, Engine-Telemetrie), `Header.tsx`, `ModeSwitcher.tsx` (`Stream Mount` | `Hybrid Smart Pinning` | `Full Offline Mirror`), `FolderTree.tsx` (Selektiv-Sync-Checkboxen, Offline-Pin-Toggles, `rclone crypt`-Badges), `InspectorDrawer.tsx` (Spiegel-Richtungen `Lokal ↔ Cloud`, `Lokal → Cloud`, `Cloud → Lokal`, Soft-Delete `.strata-archive`, VFS-Cache-Quoten & `.strataignore`-Regeln), `TransferHub.tsx` (Live-Bandbreiten-Graph & Transfer-Liste), `ConflictModal.tsx` und `OnboardingModal.tsx`.
+  2. **Rust Core Daemon (`src-tauri/`, Tauri v2, Rust Edition 2024):**
+     - Modulare Backend-Architektur unter `src-tauri/src/{engine,mount,sync,watcher,security,ipc}` mit plattformunabhängiger `PathBuf`-Auflösung und `#[cfg(target_os = "...")]`-Kapselung für Linux (`FUSE3`, Unix Domain Socket, `SecretService`) und Windows (`WinFsp`, Loopback Auth, `Credential Manager`) aufgebaut.
+     - Unit-Tests für System-Capabilities, Watcher-Debouncer und Sync-Policies in `src-tauri/src/lib.rs` hinterlegt.
+- **Verifikation:** `npm run typecheck` und `npm run build` (`vite build`) sowie `cargo check` / `cargo test` in `src-tauri` fehlerfrei verifiziert.
+
 ### [BB-001] 2026-11-01 01:02 (CET) – [ARCH-LEXICON] Phase 0: Aufbau des Public Open-Source Repository-Fundaments & Architektur-Lexikons
 - **Akteur:** Antigravity AI & Project Lead
 - **Typ:** `ARCHITECTURE` | `SECURITY`

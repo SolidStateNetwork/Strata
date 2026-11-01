@@ -99,7 +99,7 @@ flowchart TB
 
 - [x] **Phase 0: Architecture Foundation & AI-First Repository Governance**
   - Comprehensive technical specifications (`architecture/00`–`04`), milestone roadmap, and automated pre-commit security guardrails.
-- [ ] **Phase 1: Core Workspace & Modern UI Prototype**
+- [x] **Phase 1: Core Workspace & Modern UI Prototype**
   - Tauri v2 (Rust + React/TypeScript + Tailwind CSS) monorepo setup, responsive workspace layout, 3-mode storage switcher, interactive folder tree, and live transfer drawer.
 - [ ] **Phase 2: Rclone Engine Bridge & Zero-Knowledge Onboarding**
   - Managed `rclone rcd` JSON-RPC daemon in Rust, OS Keyring credential encryption, OAuth provider wizard, and 1-click `rclone crypt` vault setup.

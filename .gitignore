@@ -15,6 +15,7 @@ yarn-error.log*
 # --- Rust & Tauri Build Artifacts ---
 target/
 **/target/
+src-tauri/gen/
 Cargo.lock.bk
 **/*.rs.bk
 *.pdb

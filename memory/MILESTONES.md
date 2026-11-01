@@ -13,14 +13,14 @@ Dieses Dokument steuert den kompletten Aufbau von **Strata** vom Architektur-Fun
 
 ---
 
-## 🎨 Phase 1: Core Workspace & Modern UI Prototype (Tauri v2 + React/Tailwind)
+## ✅ Phase 1: Core Workspace & Modern UI Prototype (Tauri v2 + React/Tailwind)
 *Referenz: [`architecture/01-tech-stack-and-monorepo.md`](../architecture/01-tech-stack-and-monorepo.md)*
-- [ ] **M1.1:** Tauri v2 Monorepo (`src/` React 19 + TypeScript + Tailwind CSS + Vite & `src-tauri/` Rust Core) initialisieren.
-- [ ] **M1.2:** Modernes 3-Spalten-Cockpit („Linear / Raycast“-Look) bauen:
-  - [ ] Linke Sidebar mit Cloud-Remote-Liste, Anbieter-Icons und Speicherplatz-Anzeige.
-  - [ ] Oberer **3-Modi-Segmented-Switch** (`☁️ Stream Mount` | `📌 Hybrid Smart Pinning` | `💾 Full Offline Mirror`).
-  - [ ] Interaktiver, schneller Ordnerbaum mit Selektiv-Sync-Checkboxen, Pin-Icons und Status-Badges.
-- [ ] **M1.3:** Rechter Inspector-Drawer (Spiegel-Richtung `Lokal ↔ Cloud`, `Lokal → Cloud`, `Cloud → Lokal`, VFS-Cache-Limit Slider, Zero-Knowledge Encryption Toggle) und ausklappbarer **Live-Transfer- & Activity-Hub** mit Echtzeit-Speed-Graph.
+- [x] **M1.1:** Tauri v2 Monorepo (`src/` React 19 + TypeScript + Tailwind CSS + Vite & `src-tauri/` Rust Core) initialisieren.
+- [x] **M1.2:** Modernes 3-Spalten-Cockpit („Linear / Raycast“-Look) bauen:
+  - [x] Linke Sidebar mit Cloud-Remote-Liste, Anbieter-Icons und Speicherplatz-Anzeige.
+  - [x] Oberer **3-Modi-Segmented-Switch** (`☁️ Stream Mount` | `📌 Hybrid Smart Pinning` | `💾 Full Offline Mirror`).
+  - [x] Interaktiver, schneller Ordnerbaum mit Selektiv-Sync-Checkboxen, Pin-Icons und Status-Badges.
+- [x] **M1.3:** Rechter Inspector-Drawer (Spiegel-Richtung `Lokal ↔ Cloud`, `Lokal → Cloud`, `Cloud → Lokal`, VFS-Cache-Limit Slider, Zero-Knowledge Encryption Toggle) und ausklappbarer **Live-Transfer- & Activity-Hub** mit Echtzeit-Speed-Graph.
 
 ---
 
