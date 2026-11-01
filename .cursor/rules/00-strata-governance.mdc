@@ -1,0 +1,14 @@
+---
+description: Verbindliches Architektur-Lexikon & AI Memory Blackbox Protokoll (SolidStateNetwork/Strata)
+globs: "**/*"
+alwaysApply: true
+---
+
+# 🤖 Verbindliche Direktive für alle KI-Agenten (SolidStateNetwork/Strata)
+
+Dieses Repository ist ein **öffentliches Open-Source-Softwareprojekt (GPL-3.0)** und nutzt ein zentrales **Architektur-Lexikon & Langzeitgedächtnis (`memory/`)**.
+
+1. **Read First:** Lies vor jeder Aufgabe `AGENTS.md`, `memory/PROJECT_STATE.md`, `memory/BLACKBOX.md` und `memory/MILESTONES.md`.
+2. **Check Standards:** Halte dich strikt an alle Vorgaben unter `architecture/` (`00`–`04`) und `playbooks/`.
+3. **Public Clean-Room Policy:** Niemals Passwörter, Private Keys, OAuth-Tokens, `rclone.conf`, `.env` oder lokale Benutzerpfade (`/home/<user>/...`) ins öffentliche Git schreiben.
+4. **Write Back & Push:** Nach jedem abgeschlossenen Entwicklungsschritt zwingend `memory/PROJECT_STATE.md`, `memory/MILESTONES.md` und `memory/BLACKBOX.md` (`[BB-XXX]`) aktualisieren, committen und auf `origin main` pushen!

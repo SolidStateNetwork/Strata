@@ -1,0 +1,51 @@
+# =============================================================================
+# Strata - Public Open-Source .gitignore
+# =============================================================================
+
+# --- Dependencies & Frontend Build ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm
+.pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Rust & Tauri Build Artifacts ---
+target/
+**/target/
+Cargo.lock.bk
+**/*.rs.bk
+*.pdb
+
+# --- STRICT ZERO-SECRET & CREDENTIAL EXCLUSIONS ---
+.env
+.env.*
+!.env.example
+rclone.conf
+*rclone*.conf
+*.key
+*.pem
+*.p12
+*.pfx
+*.token
+*.secret
+secrets/
+vault/
+
+# --- Local VFS & Test Caches ---
+.strata-cache/
+.vfs-cache/
+tmp/
+temp/
+
+# --- IDE & OS Files ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
