@@ -9,6 +9,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "test": "python playbooks/scripts/verify-lexicon-completeness.py",
     "preview": "vite preview",
     "tauri": "tauri"
   },

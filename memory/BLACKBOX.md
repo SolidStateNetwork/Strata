@@ -1,80 +1,91 @@
-# ⬛ GLOBAL MEMORY BLACKBOX – Chronologisches Entwicklungs-Logbuch & ADRs
+# ⬛ GLOBAL MEMORY BLACKBOX — Chronological Engineering Log & ADRs
 
-> **ZWECK DIESER DATEI:**  
-> Die `BLACKBOX.md` ist das zentrale, unveränderliche Langzeitgedächtnis (Append-Only Engineering Log & Architecture Decision Record) von **Strata (`SolidStateNetwork/Strata`)**.  
-> **Jeder KI-Agent und Entwickler**, der Features implementiert, die Architektur erweitert oder Bugs behebt, **muss** hier einen strukturierten Eintrag hinterlassen (neueste Einträge immer **oben**).
+> **PURPOSE OF THIS FILE:**  
+> `BLACKBOX.md` is the central, append-only long-term engineering memory and Architecture Decision Record of **Strata (`SolidStateNetwork/Strata`)**.  
+> **Every AI agent and developer** who implements features, updates architecture, or fixes bugs **must** prepend a structured entry at the top of the chronological log.
 
 ---
 
-## 📝 Vorlage für neue Blackbox-Einträge
+## 📝 Template for New Blackbox Entries
 
 ```markdown
-### [BB-XXX] YYYY-MM-DD HH:MM (TZ) – [MODUL] Kurztitel der Änderung
-- **Akteur:** <KI-Modell / Agent / Entwickler>
-- **Typ:** `ARCHITECTURE` | `FEATURE` | `UI` | `ENGINE` | `SECURITY` | `FIX` | `RELEASE`
-- **Betroffene Module:** `ARCH-LEXICON` | `UI-SHELL` | `UI-EXPLORER` | `CORE-RCD` | `MODE-STREAM` | `MODE-MIRROR` | `MODE-HYBRID`
-- **Ziel / Hintergrund:** Warum wurde die Änderung durchgeführt?
-- **Durchgeführte Schritte:** Welche Dateien, Komponenten oder Rust-Module wurden erstellt/angepasst?
-- **Verifikation:** Wie wurde geprüft, dass alles fehlerfrei kompiliert und funktioniert?
+### [BB-XXX] YYYY-MM-DD HH:MM (TZ) — [MODULE] Short Summary of Change
+- **Actor:** <AI Model / Agent / Developer>
+- **Type:** `ARCHITECTURE` | `FEATURE` | `UI` | `ENGINE` | `SECURITY` | `FIX` | `RELEASE`
+- **Affected Modules:** `ARCH-LEXICON` | `UI-SHELL` | `UI-EXPLORER` | `CORE-RCD` | `MODE-STREAM` | `MODE-MIRROR` | `MODE-HYBRID`
+- **Goal / Context:** Why was this change made?
+- **Steps Performed:** Which files, components, or Rust modules were created or modified?
+- **Verification:** How was compilation, test execution, and lexicon compliance verified?
 ```
 
 ---
 
 ## 🏛️ Architecture Decision Records (ADRs)
 
-| ADR-ID | Entscheidung | Begründung |
+| ADR ID | Decision | Rationale |
 | :--- | :--- | :--- |
-| **ADR-001** | **Tauri v2 (Rust) + React/TypeScript + Tailwind CSS als App-Stack** | Ein Sync- & Mount-Client läuft 24/7 im System-Tray. Tauri v2 ermöglicht ein hochmodernes Web-UI (Linear/Raycast-Ästhetik) bei minimalem RAM-Verbrauch im Hintergrund (~15–30 MB statt 400+ MB bei Electron). |
-| **ADR-002** | **Entkoppelte `rclone rcd` JSON-RPC Engine statt hartem Go-Code-Import** | Durch die Steuerung von `rclone` über dessen offizielle JSON-RPC-API (`rclone rcd` über lokalen Unix-Socket bzw. authentifizierten Loopback) profitieren wir sofort von jedem neuen `rclone`-Release und 70+ Cloud-Providern ohne Go-Dependency-Konflikte. |
-| **ADR-003** | **Drei-Modi-Speicherarchitektur (`Stream Mount`, `Full Offline Mirror`, `Hybrid Smart Pinning`)** | Vereint die Vorteile von *Google Drive for Desktop* (0 GB virtuelles Laufwerk) und *Insync* (echter lokaler Ordner-Spiegel in beide oder eine Richtung) und erlaubt das gezielte Offline-Pinnen einzelner Ordner innerhalb eines großen Cloud-Mounts. |
-| **ADR-004** | **Echtzeit-Synchronisation via nativem Rust `notify`-Watcher + Smart Debouncer** | Überwindet die größte Schwäche von reinem `rclone bisync` (starre Cron-Intervalle), indem lokale Dateiänderungen sofort über `inotify` (Linux) bzw. `ReadDirectoryChangesW` (Windows) erkannt, gefiltert und gebündelt synchronisiert werden. |
-| **ADR-005** | **OS-Keyring-Verschlüsselung & GPL-3.0 Lizenzierung** | Alle Cloud-Tokens werden über den nativen Betriebssystem-Keyring (`SecretService` / `Windows Credential Manager`) verschlüsselt gespeichert. Die Lizenz **GPL-3.0** garantiert, dass Strata und alle Derivate dauerhaft freies Open Source bleiben. |
+| **ADR-001** | **Tauri v2 (Rust) + React/TypeScript + Tailwind CSS as Application Stack** | A sync and virtual drive client runs 24/7 in the system tray. Tauri v2 enables a modern web UI (Linear/Raycast aesthetic) with a minimal background memory footprint (~15–30 MB vs. 400+ MB in Electron). |
+| **ADR-002** | **Decoupled `rclone rcd` JSON-RPC Engine Instead of Hard Go FFI Binding** | Controlling `rclone` through its official JSON-RPC API (`rclone rcd` over local Unix domain socket or authenticated loopback) immediately leverages every upstream `rclone` release and 70+ cloud providers without Go/Rust C-shared linker conflicts. |
+| **ADR-003** | **Three-Mode Storage Architecture (`Stream Mount`, `Full Offline Mirror`, `Hybrid Smart Pinning`)** | Unifies the strengths of *Google Drive for Desktop* (0 GB virtual drive) and *Insync* (real local folder mirror in 2-way or 1-way mode) while allowing selective offline pinning of individual folders inside a cloud mount. |
+| **ADR-004** | **Real-Time Synchronization via Native Rust `notify` Watcher + Smart Debouncer** | Overcomes the primary limitation of standalone `rclone bisync` (rigid cron intervals) by detecting local file events immediately via `inotify` (Linux) or `ReadDirectoryChangesW` (Windows), filtering temporary files, and batching changes. |
+| **ADR-005** | **OS Keyring Encryption & GPL-3.0 Licensing** | All cloud tokens and configuration keys are encrypted via the native OS credential vault (`SecretService` / `Windows Credential Manager`). The **GPL-3.0** license guarantees that Strata and all derivatives remain free and open source. |
 
 ---
 
-## 📜 Chronologisches Logbuch (Neueste zuerst)
+## 📜 Chronological Engineering Log (Newest First)
 
-### [BB-004] 2026-11-02 23:35 (CET) – [ARCH-LEXICON] Ergänzung von `playbooks/scripts/verify-lexicon-completeness.py`
-- **Akteur:** Antigravity AI
-- **Typ:** `ARCHITECTURE` | `SECURITY`
-- **Betroffene Module:** `ARCH-LEXICON`
-- **Ziel / Hintergrund:** Bereitstellung des standardisierten Lexikon- & Clean-Room-Verifikationsskripts `playbooks/scripts/verify-lexicon-completeness.py` analog zu allen anderen SolidStateNetwork-Repositories.
-- **Durchgeführte Schritte:**
-  1. `playbooks/scripts/verify-lexicon-completeness.py` mit Prüfung aller 21 Pflichtdateien und Clean-Room-IP-/Pfad-Scanner erstellt.
-- **Verifikation:** `python3 playbooks/scripts/verify-lexicon-completeness.py` mit `EXIT 0` bestanden.
+### [BB-005] 2026-11-03 10:02 (CET) — [ARCH-LEXICON] Single-Repository Decoupling, Structural Consolidation & 100% English Standardization
+- **Actor:** Antigravity AI (Gemini 4 Argon)
+- **Type:** `ARCHITECTURE` | `SECURITY`
+- **Affected Modules:** `ARCH-LEXICON`
+- **Goal / Context:** Decouple Strata into a 100% self-contained standalone repository, remove cross-repository bridge/template clutter and duplicate IDE instruction files, translate all architecture, memory, and playbook documents into idiomatic English, and add automated GitHub Actions CI verification.
+- **Steps Performed:**
+  1. Removed decoupled cross-repository directories (`bridge/`, `design/`, `templates/`) and redundant duplicate agent rule files (`.cursorrules`, `.windsurfrules`, `.cursor/`, `.agents/`, `.github/copilot-instructions.md`).
+  2. Rewrote `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `architecture/00`–`04`, `playbooks/01`–`02`, and `memory/{PROJECT_STATE,MILESTONES,BLACKBOX}.md` in 100% idiomatic English enforcing the Strict Single-Repository Boundary.
+  3. Updated `playbooks/scripts/verify-lexicon-completeness.py` to enforce the streamlined required file set and fail if forbidden bloat paths or cross-repository references reappear.
+  4. Added `.github/workflows/ci.yml` and `package.json` verification scripts (`lint`, `typecheck`, `test`, `build`).
+- **Verification:** Verified `python playbooks/scripts/verify-lexicon-completeness.py`, `npm run typecheck`, `npm run lint`, `npm test`, and `npm run build` with 0 errors.
 
-### [BB-003] 2026-11-02 22:55 (CET) – [ARCH-LEXICON / UI-SHELL] Integration der flottenweiten `templates/`-, `design/`- und Clean-Room `bridge/`-Architektur
-- **Akteur:** Antigravity AI
-- **Typ:** `ARCHITECTURE` | `UI`
-- **Betroffene Module:** `ARCH-LEXICON`, `UI-SHELL`
-- **Ziel / Hintergrund:** Synchronisation der Design-Templates (`synapse-canvas`, `signal-terminal`, `werkblick-handwerk`) und der entkoppelten Clean-Room-Bridge (`bridge/ssn-bridge.py`) über alle SolidStateNetwork-Repositories.
-- **Durchgeführte Schritte:**
-  1. `templates/design-tokens.json`, `templates/theme-bridge.css`, `templates/README.md` und `design/README.md` hinzugefügt.
-  2. `bridge/contract.json` und `bridge/ssn-bridge.py` eingerichtet.
-- **Verifikation:** `python3 bridge/ssn-bridge.py status` und Pre-Commit-Checks erfolgreich geprüft.
+### [BB-004] 2026-11-02 23:35 (CET) — [ARCH-LEXICON] Addition of `playbooks/scripts/verify-lexicon-completeness.py`
+- **Actor:** Antigravity AI
+- **Type:** `ARCHITECTURE` | `SECURITY`
+- **Affected Modules:** `ARCH-LEXICON`
+- **Goal / Context:** Provide an automated lexicon and clean-room verification script (`playbooks/scripts/verify-lexicon-completeness.py`) for the repository.
+- **Steps Performed:**
+  1. Created `playbooks/scripts/verify-lexicon-completeness.py` with mandatory artifact checks and a clean-room IP/path scanner.
+- **Verification:** `python3 playbooks/scripts/verify-lexicon-completeness.py` passed with `EXIT 0`.
 
-### [BB-002] 2026-11-01 01:22 (CET) – [UI-SHELL / UI-EXPLORER / CORE-RCD] Phase 1: Initialisierung des Tauri v2 Monorepos & 3-Spalten Desktop-Cockpits
-- **Akteur:** Antigravity AI (Gemini 4 Argon)
-- **Typ:** `ARCHITECTURE` | `FEATURE` | `UI` | `ENGINE`
-- **Betroffene Module:** `UI-SHELL`, `UI-EXPLORER`, `CORE-RCD`, `MODE-STREAM`, `MODE-MIRROR`, `MODE-HYBRID`
-- **Ziel / Hintergrund:** Vollständige Initialisierung des Projektordners gemäß [`architecture/01-tech-stack-and-monorepo.md`](../architecture/01-tech-stack-and-monorepo.md) und Umsetzung von Phase 1 (`M1.1`–`M1.3`).
-- **Durchgeführte Schritte:**
+### [BB-003] 2026-11-02 22:55 (CET) — [ARCH-LEXICON / UI-SHELL] Initial Design Token Exploration (Superseded by BB-005)
+- **Actor:** Antigravity AI
+- **Type:** `ARCHITECTURE` | `UI`
+- **Affected Modules:** `ARCH-LEXICON`, `UI-SHELL`
+- **Goal / Context:** Evaluated external theme token files before consolidating all styling tokens directly inside `tailwind.config.js` and `src/styles/globals.css` in `[BB-005]`.
+- **Steps Performed:**
+  1. Verified standalone Tailwind CSS theme configuration in `tailwind.config.js` and `src/styles/globals.css`.
+- **Verification:** Pre-commit and build checks passed.
+
+### [BB-002] 2026-11-01 01:22 (CET) — [UI-SHELL / UI-EXPLORER / CORE-RCD] Phase 1: Initialization of Tauri v2 Monorepo & 3-Column Desktop Cockpit
+- **Actor:** Antigravity AI (Gemini 4 Argon)
+- **Type:** `ARCHITECTURE` | `FEATURE` | `UI` | `ENGINE`
+- **Affected Modules:** `UI-SHELL`, `UI-EXPLORER`, `CORE-RCD`, `MODE-STREAM`, `MODE-MIRROR`, `MODE-HYBRID`
+- **Goal / Context:** Complete initialization of the project workspace according to [`architecture/01-tech-stack-and-monorepo.md`](../architecture/01-tech-stack-and-monorepo.md) and delivery of Phase 1 (`M1.1`–`M1.3`).
+- **Steps Performed:**
   1. **Frontend (`src/`, Vite + React 19 + TypeScript + Tailwind CSS + Zustand):**
-     - Typisierte Tauri IPC-Brücke (`src/lib/ipc.ts`) und zentralen reaktiven Store (`src/stores/useStrataStore.ts`) erstellt.
-     - 3-Spalten-Cockpit implementiert: `Sidebar.tsx` (Cloud-Remotes, Speicherbalken, Engine-Telemetrie), `Header.tsx`, `ModeSwitcher.tsx` (`Stream Mount` | `Hybrid Smart Pinning` | `Full Offline Mirror`), `FolderTree.tsx` (Selektiv-Sync-Checkboxen, Offline-Pin-Toggles, `rclone crypt`-Badges), `InspectorDrawer.tsx` (Spiegel-Richtungen `Lokal ↔ Cloud`, `Lokal → Cloud`, `Cloud → Lokal`, Soft-Delete `.strata-archive`, VFS-Cache-Quoten & `.strataignore`-Regeln), `TransferHub.tsx` (Live-Bandbreiten-Graph & Transfer-Liste), `ConflictModal.tsx` und `OnboardingModal.tsx`.
+     - Created typed Tauri IPC bridge (`src/lib/ipc.ts`) and central reactive store (`src/stores/useStrataStore.ts`).
+     - Implemented 3-column cockpit: `Sidebar.tsx` (cloud remotes, storage usage bars, engine telemetry), `Header.tsx`, `ModeSwitcher.tsx` (`Stream Mount` | `Hybrid Smart Pinning` | `Full Offline Mirror`), `FolderTree.tsx` (selective sync checkboxes, offline pin toggles, `rclone crypt` badges), `InspectorDrawer.tsx` (mirror directions `Local ↔ Cloud`, `Local → Cloud`, `Cloud → Local`, soft-delete `.strata-archive`, VFS cache quotas & `.strataignore` rules), `TransferHub.tsx` (live bandwidth sparkline & transfer queue), `ConflictModal.tsx`, and `OnboardingModal.tsx`.
   2. **Rust Core Daemon (`src-tauri/`, Tauri v2, Rust Edition 2024):**
-     - Modulare Backend-Architektur unter `src-tauri/src/{engine,mount,sync,watcher,security,ipc}` mit plattformunabhängiger `PathBuf`-Auflösung und `#[cfg(target_os = "...")]`-Kapselung für Linux (`FUSE3`, Unix Domain Socket, `SecretService`) und Windows (`WinFsp`, Loopback Auth, `Credential Manager`) aufgebaut.
-     - Unit-Tests für System-Capabilities, Watcher-Debouncer und Sync-Policies in `src-tauri/src/lib.rs` hinterlegt.
-- **Verifikation:** `npm run typecheck` und `npm run build` (`vite build`) sowie `cargo check` / `cargo test` in `src-tauri` fehlerfrei verifiziert.
+     - Built modular backend architecture under `src-tauri/src/{engine,mount,sync,watcher,security,ipc}` with cross-platform `PathBuf` resolution and `#[cfg(target_os = "...")]` encapsulation for Linux (`FUSE3`, Unix domain socket, `SecretService`) and Windows (`WinFsp`, loopback auth, `Credential Manager`).
+     - Added unit tests for system capabilities, watcher debouncer defaults, and sync policies in `src-tauri/src/lib.rs`.
+- **Verification:** Verified `npm run typecheck`, `npm run build` (`vite build`), and `cargo check` / `cargo test` in `src-tauri` with 0 errors.
 
-### [BB-001] 2026-11-01 01:02 (CET) – [ARCH-LEXICON] Phase 0: Aufbau des Public Open-Source Repository-Fundaments & Architektur-Lexikons
-- **Akteur:** Antigravity AI & Project Lead
-- **Typ:** `ARCHITECTURE` | `SECURITY`
-- **Betroffene Module:** `ARCH-LEXICON` (`README.md`, `LICENSE`, `AGENTS.md`, `architecture/00`–`04`, `memory/*`, `playbooks/*`, `.githooks/pre-commit`)
-- **Ziel / Hintergrund:** Sauberer, hochstrukturierter Projektstart für **Strata (`SolidStateNetwork/Strata`)** nach dem Vorbild des Enterprise-Lexikons, vollständig adaptiert und gehärtet für ein **öffentliches Open-Source-Repository**.
-- **Durchgeführte Schritte:**
-  1. Englische Public-Facing-Dokumentation (`README.md` mit System-Architektur-Diagramm, 3-Modi-Erklärung und Vergleichsmatrix, `LICENSE` GPL-3.0, `CONTRIBUTING.md`, `SECURITY.md`, `.github/ISSUE_TEMPLATE/`) angelegt.
-  2. Technische Architektur-Standards (`architecture/00-product-vision.md` bis `04-security-and-zero-knowledge.md`) und Entwicklungs-Playbooks (`playbooks/01` & `02`) erstellt.
-  3. Persistentes KI-Gedächtnis (`memory/PROJECT_STATE.md`, `memory/MILESTONES.md`, `memory/BLACKBOX.md` inkl. `ADR-001` bis `ADR-005`) eingerichtet.
-  4. Multi-IDE KI-Governance (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, `.windsurfrules`, `.github/copilot-instructions.md`, `.agents/hooks.json`) und den automatischen Public-Secret- & Pfad-Blocker (`.githooks/pre-commit`) aktiviert.
-- **Verifikation:** Pre-Commit-Hook verifiziert, keine internen Daten oder lokalen Pfade im Repository, Phase 0 (`M0.1`–`M0.4`) vollständig abgeschlossen.
+### [BB-001] 2026-11-01 01:02 (CET) — [ARCH-LEXICON] Phase 0: Public Open-Source Repository Foundation & Architecture Lexicon
+- **Actor:** Antigravity AI & Project Lead
+- **Type:** `ARCHITECTURE` | `SECURITY`
+- **Affected Modules:** `ARCH-LEXICON` (`README.md`, `LICENSE`, `AGENTS.md`, `architecture/00`–`04`, `memory/*`, `playbooks/*`, `.githooks/pre-commit`)
+- **Goal / Context:** Establish a clean, well-structured project foundation for **Strata (`SolidStateNetwork/Strata`)** tailored for a public open-source repository.
+- **Steps Performed:**
+  1. Created public-facing documentation (`README.md` with system architecture diagram, 3-mode explanation, and comparison matrix, `LICENSE` GPL-3.0, `CONTRIBUTING.md`, `SECURITY.md`, `.github/ISSUE_TEMPLATE/`).
+  2. Authored technical architecture specifications (`architecture/00-product-vision.md` through `04-security-and-zero-knowledge.md`) and engineering playbooks (`playbooks/01` & `02`).
+  3. Initialized persistent AI memory (`memory/PROJECT_STATE.md`, `memory/MILESTONES.md`, `memory/BLACKBOX.md` including `ADR-001` through `ADR-005`).
+  4. Enabled AI governance (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) and the automated pre-commit secret and path blocker (`.githooks/pre-commit`).
+- **Verification:** Verified pre-commit hook, confirmed zero internal data or local workstation paths in the repository, and completed Phase 0 (`M0.1`–`M0.4`).

@@ -1,34 +1,34 @@
-# 🌟 00 – Product Vision: Strata („Best of rclone & Insync“)
+# 🌟 00 — Product Vision: Strata ("Best of rclone & Insync")
 
-## 1. Ausgangslage & Problemstellung
+## 1. Background & Problem Statement
 
-Auf Linux und Windows existiert eine deutliche Lücke im Bereich Cloud-Synchronisation und Cloud-Mounting:
-1. **`rclone` (CLI):** Unterstützt über 70 Cloud-Provider, bietet extrem stabiles VFS-Mounting (`rclone mount`), bidirektionale Synchronisation (`rclone bisync`) und starke Client-seitige Verschlüsselung (`rclone crypt`). Allerdings fehlt eine moderne Desktop-Oberfläche, ein integrierter Echtzeit-Dateisystem-Watcher (`inotify` / `ReadDirectoryChangesW`) sowie eine visuelle Konfliktlösung.
-2. **Insync (Proprietär):** Bietet hervorragende Desktop-Workflows (Selektiver Sync per Ordnerbaum, beliebige lokale Ordner-Mappings, Ignore-Regeln, Activity-Feed), ist jedoch **Closed-Source**, teuer (Lizenzmodell pro Account), unterstützt nur 3 Cloud-Anbieter (Google Drive, OneDrive, Dropbox) und besitzt eine optisch veraltete Benutzeroberfläche sowie keinen echten „Lightweight Virtual Drive (0 GB lokal)“-Modus für beliebige Clouds.
+On Linux and Windows, power users face a major gap in cloud synchronization and virtual drive mounting:
+1. **`rclone` (CLI):** Supports 70+ cloud providers, offers rock-solid VFS mounting (`rclone mount`), bidirectional synchronization (`rclone bisync`), and strong client-side encryption (`rclone crypt`). However, it lacks a modern native desktop interface, a built-in real-time filesystem watcher (`inotify` / `ReadDirectoryChangesW`), and visual conflict resolution.
+2. **Insync (Proprietary):** Provides great desktop workflows (selective sync folder trees, arbitrary local folder mappings, ignore rules, activity feeds), but is **closed-source**, expensive (per-account licensing), limited to only 3 cloud providers (Google Drive, OneDrive, Dropbox), features a dated user interface, and lacks a true "Lightweight Virtual Drive (0 GB local)" stream mode across arbitrary clouds.
 
 ---
 
-## 2. Die Vision von Strata
+## 2. The Strata Vision
 
-**Strata** vereint die unerreichte Multi-Cloud- & Krypto-Power von `rclone` mit dem Bedienkomfort von *Insync* und der flexiblen Speicher-Architektur von *Google Drive for Desktop (Stream vs. Mirror)* in einer modernen, ressourcenschonenden Open-Source-App (**GPL-3.0**) für **Windows und Linux**.
+**Strata** combines the unmatched multi-cloud and cryptographic power of `rclone` with the desktop usability of *Insync* and the flexible storage architecture of *Google Drive for Desktop (Stream vs. Mirror)* inside a modern, lightweight open-source application (**GPL-3.0**) for **Windows and Linux**.
 
 ```mermaid
 flowchart LR
-    subgraph Layer1["☁️ Schicht 1: Cloud Provider Layer (70+ Clouds)"]
+    subgraph Layer1["☁️ Layer 1: Cloud Provider Layer (70+ Clouds)"]
         C1["Google Drive / OneDrive / Dropbox"]
         C2["Proton Drive / Nextcloud / WebDAV"]
         C3["AWS S3 / Backblaze B2 / Hetzner StorageBox"]
     end
 
-    subgraph Layer2["🔐 Schicht 2: Strata Engine & Crypto Layer"]
-        Crypt["Optionaler Zero-Knowledge Layer\n(rclone crypt)"]
-        VFS["Intelligenter VFS-Cache & Bisync-Orchestrator\n(Rust Daemon + rclone rcd)"]
+    subgraph Layer2["🔐 Layer 2: Strata Engine & Crypto Layer"]
+        Crypt["Optional Zero-Knowledge Layer\n(rclone crypt)"]
+        VFS["Smart VFS Cache & Bisync Orchestrator\n(Rust Daemon + rclone rcd)"]
     end
 
-    subgraph Layer3["💻 Schicht 3: Local & Virtual Filesystem Layer"]
-        M1["☁️ Stream Mode\n(Virtuelles Laufwerk Z: / FUSE3 – 0 GB lokal)"]
-        M2["📌 Hybrid Smart Pinning\n(Virtueller Mount + Ausgewählte Ordner lokal gepinnt)"]
-        M3["💾 Full Offline Mirror\n(100 % lokal auf Disk: 2-Way, Backup oder Download)"]
+    subgraph Layer3["💻 Layer 3: Local & Virtual Filesystem Layer"]
+        M1["☁️ Stream Mode\n(Virtual Drive Z: / FUSE3 — 0 GB local)"]
+        M2["📌 Hybrid Smart Pinning\n(Virtual Mount + Selected Folders Pinned Offline)"]
+        M3["💾 Full Offline Mirror\n(100% Local on Disk: 2-Way, Backup, or Download)"]
     end
 
     Layer1 <==> Layer2 <==> Layer3
@@ -36,17 +36,17 @@ flowchart LR
 
 ---
 
-## 3. Die 5 Kern-Versprechen (Core Pillars)
+## 3. Core Pillars
 
-1. **Freie Wahl zwischen Lightweight-Stream & Full-Offline-Mirror:**
-   - **Lightweight-User** binden ihre Terabyte-Cloud als virtuelles Laufwerk (`Z:` unter Windows, `~/Cloud/...` unter Linux) ein und verbrauchen lokal keinen Festplattenspeicher.
-   - **Offline-Power-User** spiegeln ihre Daten physisch auf beliebige lokale Festplatten oder Ordner (`2-Way Sync`, `Lokal → Cloud Backup` oder `Cloud → Lokal Download`).
-   - **Hybrid-User** kombinieren beides: Die gesamte Cloud ist als virtuelles Laufwerk sichtbar, während wichtige Projektordner per **📌 Pin („Offline verfügbar halten“)** physisch auf der lokalen SSD synchronisiert werden.
-2. **Echtzeit statt starrer Cronjobs:**
-   - Lokale Änderungen werden über native Betriebssystem-Events (`inotify` auf Linux, `ReadDirectoryChangesW` auf Windows) sofort erkannt und gebündelt (Debouncing) an die Sync-Engine übergeben.
-3. **Modernes UI/UX („Linear / Raycast“-Ästhetik):**
-   - Keine verschachtelten Einstellungsfenster aus den 2000ern. Klare Typografie, flüssige Animationen, Dark/Light-Mode, Echtzeit-Bandbreiten-Graphen und ein übersichtlicher Activity-Feed.
-4. **Zero-Knowledge Encryption per Klick:**
-   - Jeder Ordner oder jedes Remote kann per einfachem Toggle-Switch im UI clientseitig Ende-zu-Ende verschlüsselt werden (`rclone crypt`), ohne dass der Nutzer kryptografische CLI-Parameter kennen muss.
-5. **Minimaler Ressourcenverbrauch im Hintergrund:**
-   - Durch **Tauri v2 + Rust** benötigt der Hintergrund-Daemon im System-Tray nur wenige Megabyte RAM, wenn das Hauptfenster geschlossen ist.
+1. **Free Choice Between Lightweight Stream & Full Offline Mirror:**
+   - **Lightweight Users** mount terabyte-scale cloud remotes as a virtual drive (`Z:` on Windows, `~/Cloud/...` on Linux) without consuming permanent local disk space.
+   - **Offline Power Users** physically mirror their data onto arbitrary local drives or folders (`2-Way Sync`, `Local → Cloud Backup`, or `Cloud → Local Download`).
+   - **Hybrid Users** combine both: the entire cloud remains visible as a virtual drive while critical project directories are pinned via **📌 Pin ("Keep Offline")** and physically synchronized on the local SSD.
+2. **Real-Time Events Instead of Rigid Cron Jobs:**
+   - Local file changes are detected immediately via native operating system events (`inotify` on Linux, `ReadDirectoryChangesW` on Windows) and delivered to the sync engine through a smart debouncer.
+3. **Modern UI/UX ("Linear / Raycast" Aesthetic):**
+   - No cluttered 2000s-era settings dialogs. Crisp typography, smooth transitions, dark/light themes, real-time bandwidth sparklines, and an actionable activity hub.
+4. **1-Click Zero-Knowledge Encryption:**
+   - Any folder or remote can be end-to-end encrypted client-side (`rclone crypt`) via a simple UI toggle without requiring users to memorize cryptographic CLI flags.
+5. **Minimal Background Resource Footprint:**
+   - Powered by **Tauri v2 + Rust**, the background system-tray daemon consumes only a few megabytes of RAM when the main cockpit window is closed.

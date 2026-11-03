@@ -1,61 +1,61 @@
-# 🔄 03 – Sync-, Mirror- & Hybrid-Pinning-Architektur
+# 🔄 03 — Sync, Mirror & Hybrid Smart Pinning Architecture
 
-## 1. Übersicht der 3 Betriebsmodi
+## 1. Overview of the 3 Storage Modes
 
-Strata unterstützt für jedes verbundene Cloud-Remote drei klar definierte Betriebsmodi, die im UI jederzeit umgeschaltet oder pro Ordner kombiniert werden können:
+Strata supports three clearly defined operating modes for every connected cloud remote, which can be switched at any time or combined per subfolder:
 
-| Modus | Lokaler Speicherbedarf | Funktionsweise | Primärer Einsatzzweck |
+| Mode | Local Disk Footprint | Mechanism | Primary Use Case |
 | :--- | :--- | :--- | :--- |
-| **1. ☁️ Virtual Stream (Mount)** | **0 GB** *(+ optionaler VFS-Cache)* | Bindet die Cloud als Laufwerksbuchstabe (`Z:`) oder Mount-Ordner (`~/Cloud/...`) ein. Dateien werden erst beim Öffnen gestreamt. | Große Cloud-Speicher (1–20 TB) auf Laptops mit kleiner SSD. |
-| **2. 💾 Full Offline Mirror** | **100 %** der gewählten Ordner | Physischer Ordner auf einer lokalen Festplatte/Partition, der in Echtzeit mit der Cloud synchronisiert wird. | Volle Offline-Arbeit, maximale lokale I/O-Performance, lokale Backups. |
-| **3. 📌 Hybrid Smart Pinning** | **Nur gepinnte Ordner (100 %)**, Rest **0 GB** | Die gesamte Cloud ist als Virtual Mount sichtbar, aber markierte („gepinnte“) Ordner werden zusätzlich physisch für den Offline-Zugriff synchronisiert. | Best of Both Worlds: Alles sehen, aber nur aktuelle Projekte lokal speichern. |
+| **1. ☁️ Virtual Stream (Mount)** | **0 GB** *(+ optional VFS cache)* | Mounts the cloud remote as a drive letter (`Z:`) or mount directory (`~/Cloud/...`). Files stream on demand when opened. | Multi-terabyte cloud storage (1–20 TB) on laptops with smaller SSDs. |
+| **2. 💾 Full Offline Mirror** | **100%** of selected folders | Physical folder on a local disk or partition synchronized in real time with the cloud remote. | Full offline work, maximum local I/O speed, local disk backups. |
+| **3. 📌 Hybrid Smart Pinning** | **Pinned folders only (100%)**, remainder **0 GB** | The entire cloud is visible as a virtual mount, while pinned folders are additionally mirrored physically on disk for offline access. | Best of both worlds: browse everything, keep active projects offline. |
 
 ---
 
-## 2. Alle Spiegel-Richtungen im „Full Offline Mirror“-Modus
+## 2. Mirror Directions in "Full Offline Mirror" & "Hybrid" Modes
 
-Im Gegensatz zu herkömmlichen Cloud-Clients bietet Strata im Spiegel-Modus **drei frei wählbare Spiegel-Richtungen** pro Ordner-Paar (`Mapping`):
+Unlike conventional cloud clients, Strata provides **three selectable mirror directions** per folder mapping:
 
-### A. 🔄 Bi-Direktional (`Lokal ↔ Cloud` / 2-Way Sync)
-- **Verhalten:** Änderungen, neue Dateien, Umbenennungen und Löschungen werden auf beiden Seiten abgeglichen (analog zu Insync/Dropbox).
-- **Technik:** Nutzt eine vom Rust-Daemon orchestrierte Kombination aus:
-  1. **Echtzeit-Delta-Sync** bei lokalen Dateiänderungen (über den Rust `notify`-Filewatcher).
-  2. **Periodischem Remote-Change-Polling / Change-Notify** (`rclone bisync` / Drive Changes API), um Änderungen aus der Cloud abzurufen.
-- **Konfliktschutz:** Wird eine Datei gleichzeitig lokal und in der Cloud geändert, überschreibt Strata **niemals** stillschweigend Daten. Stattdessen wird eine Konflikt-Kopie angelegt und im **Visuellen Konflikt-Manager** zur Auswahl (Lokal behalten / Cloud behalten / Beide behalten) angezeigt.
+### A. 🔄 Bi-Directional (`Local ↔ Cloud` / 2-Way Sync)
+- **Behavior:** Edits, new files, renames, and deletions propagate in both directions (similar to Insync and Dropbox).
+- **Mechanism:** Orchestrated by the Rust daemon combining:
+  1. **Real-Time Delta Sync** triggered immediately on local file changes via the native Rust `notify` file watcher.
+  2. **Periodic Remote Change Polling / Change-Notify** (`rclone bisync` / provider change feeds) to pull remote updates.
+- **Conflict Protection:** If a file is modified concurrently both locally and in the cloud, Strata **never** overwrites data silently. Instead, it preserves both versions and surfaces the conflict in the **Side-by-Side Conflict Resolution Modal** (`Keep Local`, `Keep Cloud`, or `Keep Both`).
 
-### B. ⬆️ Backup-Spiegel (`Lokal → Cloud` / 1-Way Upload Mirror)
-- **Verhalten:** Der lokale Ordner (oder eine lokale Festplatte) ist die führende Quelle (*Single Source of Truth*). Alle lokalen Änderungen werden in die Cloud gespiegelt.
-- **Sicherheits-Option „Soft-Delete / Cloud-Archiv“:** Der Nutzer kann wählen:
-  - *Strikter Spiegel (`sync`):* Lokal gelöschte Dateien werden auch in der Cloud gelöscht.
-  - *Geschützter Backup-Spiegel (`sync --backup-dir`):* Lokal gelöschte oder überschriebene Dateien werden in der Cloud nicht gelöscht, sondern automatisch mit Zeitstempel in einen Ordner `.strata-archive/YYYY-MM-DD/` verschoben (Schutz vor versehentlichem Löschen oder Ransomware!).
-  - *Reines Hinzufügen (`copy`):* Neue und geänderte Dateien werden hochgeladen, Löschungen werden in der Cloud komplett ignoriert.
+### B. ⬆️ Backup Mirror (`Local → Cloud` / 1-Way Upload Mirror)
+- **Behavior:** The local directory or disk partition acts as the single source of truth; all local changes are mirrored to the cloud.
+- **Safety Option — "Soft-Delete Archive Guard":**
+  - *Strict Mirror (`sync`):* Locally deleted files are also removed from the cloud.
+  - *Protected Backup Mirror (`sync --backup-dir`):* Locally deleted or overwritten files are never permanently erased in the cloud; instead, they are moved with a timestamp into `.strata-archive/YYYY-MM-DD/` (protecting against accidental deletion or ransomware).
+  - *Additive Copy (`copy`):* New and modified files are uploaded while local deletions are ignored on the remote.
 
-### C. ⬇️ Download-Spiegel (`Cloud → Lokal` / 1-Way Download Mirror)
-- **Verhalten:** Die Cloud ist die führende Quelle und wird 1:1 auf einen lokalen Ordner oder ein lokales Backup-Laufwerk/NAS heruntergeladen.
-- **Einsatzgebiet:** Lokales Offline-Backup eines Cloud-Speichers (z. B. Google Drive oder Nextcloud automatisch auf eine lokale externe Festplatte spiegeln).
+### C. ⬇️ Download Mirror (`Cloud → Local` / 1-Way Download Mirror)
+- **Behavior:** The cloud remote is the source of truth and is mirrored 1:1 onto a local folder, external backup drive, or NAS share.
+- **Primary Use Case:** Automated local offline backup of cloud accounts (e.g., mirroring Google Drive or Nextcloud onto a local NVMe/HDD array).
 
 ---
 
-## 3. Echtzeit-File-Watcher & Debouncing-Pipeline (Rust `notify`)
+## 3. Real-Time File Watcher & Debouncing Pipeline (Rust `notify`)
 
-Damit lokale Dateiänderungen wie bei *Insync* sofort in der Cloud landen (ohne jede Sekunde unnötige API-Requests zu feuern), arbeitet im Rust-Backend eine mehrstufige Pipeline:
+To ensure local edits reach the cloud rapidly without flooding provider APIs on every keystroke, the Rust backend runs a multi-stage event pipeline:
 
 ```mermaid
 flowchart LR
-    FS["💻 Lokales Dateisystem\n(Speichern / Umbenennen)"] -->|"inotify (Linux)\nReadDirectoryChangesW (Win)"| Watcher["🦀 Rust notify Watcher"]
-    Watcher --> Filter["🧹 Ignore-Filter\n(.strataignore / Temp-Files)"]
-    Filter --> Debounce["⏱️ Smart Debouncer\n(z.B. 1.5s Ruhefenster)"]
-    Debounce --> Queue["📥 Priorisierte Sync-Queue\n(rclone rcd JSON-RPC)"]
+    FS["💻 Local Filesystem\n(Save / Rename / Delete)"] -->|"inotify (Linux)\nReadDirectoryChangesW (Win)"| Watcher["🦀 Rust notify Watcher"]
+    Watcher --> Filter["🧹 Ignore Filter\n(.strataignore / Temp Files)"]
+    Filter --> Debounce["⏱️ Smart Debouncer\n(1.5s quiet window)"]
+    Debounce --> Queue["📥 Prioritized Sync Queue\n(rclone rcd JSON-RPC)"]
 ```
 
-1. **Ignore-Filterung vorab:** Temporäre Editor-Dateien (`*.swp`, `~$*.docx`, `.DS_Store`, `Thumbs.db`, `node_modules/`, `.git/` falls gewünscht) werden direkt im Rust-Watcher anhand einer konfigurierbaren `.strataignore`-Regelliste ausgefiltert.
-2. **Smart Debouncing:** Wenn ein Programm (z. B. IDE oder Videoschnitt) innerhalb von 500 ms 40 Dateien speichert, wartet der Debouncer ein kurzes Ruhefenster (Standard: `1500 ms`, maximal `10 s` Batch-Delay) ab und übergibt den Vorgang als effizienten Batch-Job an `rclone rcd`.
+1. **Pre-Filter Ignore Rules:** Temporary editor swap files (`*.swp`, `~$*.docx`, `.DS_Store`, `Thumbs.db`, `node_modules/`, `.git/`) are filtered out immediately inside the Rust watcher using configurable `.strataignore` glob rules.
+2. **Smart Debouncing:** When an IDE or media tool writes dozens of files within 500 ms, the debouncer waits for a short quiet window (default `1500 ms`, maximum batch delay `10 s`) before dispatching a consolidated batch job to `rclone rcd`.
 
 ---
 
-## 4. Funktionsweise von „Hybrid Smart Pinning“
+## 4. How "Hybrid Smart Pinning" Works
 
-Wie kombiniert Strata einen **0-GB-Cloud-Mount** mit **100-%-Offline-Ordnern**?
-1. Das Cloud-Remote wird über das VFS gemountet.
-2. Markiert der Nutzer im Strata-Explorer einen Unterordner mit **📌 Pin („Immer offline verfügbar“)**, hält der Strata-Daemon diesen Teilbaum über einen lokalen Spiegel-Pfad bzw. VFS-Pinning-Job permanent im lokalen Speicher vor und synchronisiert Änderungen bidirektional.
-3. Selbst wenn die Internetverbindung abbricht, sind alle gepinnten Ordner sofort zu 100 % lokal auf der Festplatte les- und beschreibbar; sobald die Verbindung zurückkehrt, synchronisiert der Daemon die Deltas automatisch in die Cloud.
+How does Strata combine a **0 GB virtual cloud mount** with **100% offline folders**?
+1. The cloud remote is mounted via the VFS layer.
+2. When the user clicks **📌 Pin ("Pinned Offline")** on a subfolder in Strata's Folder Tree, the Strata daemon maintains that subtree in a synchronized local mirror path / VFS pin job and keeps changes bidirectionally synchronized.
+3. Even when offline on a plane or train, all pinned folders remain 100% readable and writable on the local disk; once connectivity returns, the daemon automatically reconciles all deltas with the cloud remote.

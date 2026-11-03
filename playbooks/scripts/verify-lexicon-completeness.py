@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-verify-lexicon-completeness.py — Clean-Room & Lexicon Verifier for SolidStateNetwork/Strata
+verify-lexicon-completeness.py — Standalone Clean-Room & Lexicon Verifier for Strata
 Ensures:
-1. All mandatory governance, memory, architecture, template, design, and bridge files exist.
-2. Zero leaked infrastructure IPs, internal mesh domains, or local workstation paths in tracked files.
+1. All mandatory governance, memory, architecture, and playbook files exist.
+2. Deleted cross-repo bloat directories/files (bridge/, design/, templates/, README.de.md) do not exist.
+3. Zero leaked infrastructure IPs, internal mesh domains, cross-repo references, or local workstation paths in tracked files.
 """
 from __future__ import annotations
 
@@ -12,10 +13,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-if hasattr(sys.stdout, 'reconfigure'):
-    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
-if hasattr(sys.stderr, 'reconfigure'):
-    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,23 +25,32 @@ REQUIRED_FILES = [
     "AGENTS.md",
     "CLAUDE.md",
     "GEMINI.md",
-    ".cursorrules",
-    ".windsurfrules",
-    ".agents/hooks.json",
-    ".agents/scripts/session-start-lexicon.py",
-    ".agents/scripts/stop-verify-git.py",
-    ".cursor/rules/00-strata-governance.mdc",
-    ".github/copilot-instructions.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
     ".githooks/pre-commit",
     "memory/PROJECT_STATE.md",
     "memory/MILESTONES.md",
     "memory/BLACKBOX.md",
-    "templates/design-tokens.json",
-    "templates/theme-bridge.css",
-    "templates/README.md",
-    "design/README.md",
-    "bridge/contract.json",
-    "bridge/ssn-bridge.py",
+    "architecture/00-product-vision.md",
+    "architecture/01-tech-stack-and-monorepo.md",
+    "architecture/02-rclone-engine-and-vfs-architecture.md",
+    "architecture/03-sync-and-mirror-modes.md",
+    "architecture/04-security-and-zero-knowledge.md",
+    "playbooks/01-feature-development-sop.md",
+    "playbooks/02-cross-platform-release-sop.md",
+    "playbooks/scripts/verify-lexicon-completeness.py",
+]
+
+FORBIDDEN_PATHS = [
+    "bridge",
+    "design",
+    "templates",
+    "README.de.md",
+    ".cursorrules",
+    ".windsurfrules",
+    ".cursor",
+    ".agents",
+    ".github/copilot-instructions.md",
 ]
 
 FORBIDDEN_PATTERNS = [
@@ -52,6 +62,13 @@ FORBIDDEN_PATTERNS = [
     (re.compile(r"\.[s]sn\b"), "Internal Mesh Domain"),
     (re.compile(r"/home/[a-zA-Z0-9_-]+/"), "Local Workstation Path (/home/<user>/)"),
     (re.compile(r"-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----"), "Private Key Material"),
+    (
+        re.compile(
+            r"\b(?:Gateway|Infrastructure|Synapse|Werkblick|Anvil|Odoo|Template_Signal)\b",
+            re.IGNORECASE,
+        ),
+        "Cross-Repository Reference",
+    ),
 ]
 
 
@@ -61,6 +78,10 @@ def main() -> int:
     for rel in REQUIRED_FILES:
         if not (ROOT / rel).exists():
             errors.append(f"Missing required file: {rel}")
+
+    for rel in FORBIDDEN_PATHS:
+        if (ROOT / rel).exists():
+            errors.append(f"Forbidden bloat path present: {rel}")
 
     if (ROOT / ".git").exists():
         res = subprocess.run(
@@ -95,7 +116,7 @@ def main() -> int:
 
     print(
         f"✅ [STRATA LEXICON & CLEAN-ROOM OK] All {len(REQUIRED_FILES)} mandatory artifacts verified. "
-        "0 infrastructure/workstation leaks."
+        "0 cross-repo/infrastructure/workstation leaks."
     )
     return 0
 

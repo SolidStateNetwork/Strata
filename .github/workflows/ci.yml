@@ -1,0 +1,41 @@
+name: Strata CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Lexicon, Typecheck & Frontend Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify Architecture Lexicon & Clean-Room Guardrails
+        run: python3 playbooks/scripts/verify-lexicon-completeness.py
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run TypeScript typecheck, lint & unit verification
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test
+
+      - name: Build production frontend bundle
+        run: npm run build

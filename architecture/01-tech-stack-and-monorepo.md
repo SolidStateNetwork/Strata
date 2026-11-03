@@ -1,62 +1,62 @@
-# 🛠️ 01 – Tech-Stack, Monorepo & UI-Design-Standard
+# 🛠️ 01 — Tech Stack, Monorepo & UI Design Standard
 
-## 1. Verbindlicher Technologie-Stack
+## 1. Mandatory Technology Stack
 
-Um maximale Performance auf **Linux** und **Windows** mit einer erstklassigen Benutzeroberfläche zu verbinden, setzt **Strata** auf folgenden Stack:
+To deliver maximum performance on **Linux** and **Windows** alongside a first-class user interface, **Strata** uses the following stack:
 
-| Schicht | Technologie | Begründung |
+| Layer | Technology | Rationale |
 | :--- | :--- | :--- |
-| **App-Framework** | **Tauri v2** | Nutzt native System-Webviews (`WebKitGTK` auf Linux, `WebView2` auf Windows) statt eines 200 MB schweren Chromium-Bündels (Electron). Wenn das UI-Fenster geschlossen wird, läuft nur der winzige Rust-Daemon im System-Tray weiter (~15–30 MB RAM). |
-| **Backend / Core Daemon** | **Rust (Stable, Edition 2024)** | Speichersicher, extrem schnell, erstklassige Crates für Dateisystem-Watching (`notify`), Async-Runtime (`tokio`), OS-Keyring (`keyring`) und HTTP/Socket-IPC (`reqwest` / `hyper`). |
-| **Storage-Engine** | **`rclone` (`rcd` JSON-RPC)** | Bewährte Multi-Cloud-Engine für 70+ Provider, `mount` (VFS), `bisync`, `sync`, `copy` und `crypt`. |
-| **Frontend-Framework** | **React 19 + TypeScript (Vite)** | Strikte Typsicherheit, komponentenbasierte Architektur für komplexe Datei-Bäume und Live-Telemetrie. |
-| **Styling & Komponenten** | **Tailwind CSS + shadcn/ui + Radix UI** | Barrierefreie, hochmoderne UI-Primitiven im „Linear / Raycast“-Design. |
-| **Animationen & Icons** | **Framer Motion + Lucide Icons** | Butterweiche Übergänge beim Wechsel zwischen Stream-, Hybrid- und Mirror-Modus. |
-| **State Management** | **Zustand + TanStack Query** | Schlankes, reaktives State-Management für Live-Events aus dem Rust-Backend. |
+| **App Framework** | **Tauri v2** | Uses native OS webviews (`WebKitGTK` on Linux, `WebView2` on Windows) instead of bundling a 200+ MB Chromium binary (Electron). When the UI window is closed, only the tiny Rust daemon continues running in the system tray (~15–30 MB RAM). |
+| **Backend / Core Daemon** | **Rust (Stable, Edition 2024)** | Memory-safe, fast, with first-class crates for filesystem watching (`notify`), async runtime (`tokio`), OS Keyring (`keyring`), and local HTTP/Socket IPC. |
+| **Storage Engine** | **`rclone` (`rcd` JSON-RPC)** | Battle-tested multi-cloud engine supporting 70+ providers, `mount` (VFS), `bisync`, `sync`, `copy`, and `crypt`. |
+| **Frontend Framework** | **React 19 + TypeScript (Vite)** | Strict type safety and component-driven architecture for interactive folder trees and live telemetry. |
+| **Styling & Components** | **Tailwind CSS** | Accessible, modern UI primitives following a clean "Linear / Raycast" design aesthetic. |
+| **Icons** | **Lucide Icons (`lucide-react`)** | Crisp, consistent iconography across storage modes, providers, and status badges. |
+| **State Management** | **Zustand** | Lightweight, reactive state management for real-time events emitted by the Rust backend. |
 
 ---
 
-## 2. Geplante Monorepo-Struktur (ab Phase 1)
+## 2. Monorepo Structure
 
 ```text
 Strata/
-├── src/                                # 🎨 Frontend (React + TypeScript + Tailwind)
+├── src/                                # 🎨 Frontend (React 19 + TypeScript + Tailwind CSS)
 │   ├── components/
-│   │   ├── layout/                     # Sidebar, Header, Statusbar, System-Tray-Popup
-│   │   ├── explorer/                   # Visueller Ordnerbaum, Checkbox-Sync, Pin-Badges
-│   │   ├── modes/                      # 3-Mode-Switcher (Stream | Hybrid | Mirror) & Mirror-Regeln
-│   │   ├── transfers/                  # Live-Transfer-Drawer, Speed-Graph, Activity-Feed
-│   │   ├── conflicts/                  # Side-by-Side Konfliktlösungs-Dialog
-│   │   └── onboarding/                 # Cloud-Provider OAuth-Wizard & 1-Click Crypt-Setup
-│   ├── stores/                         # Zustand Stores (Remotes, ActiveJobs, Telemetry)
-│   ├── lib/                            # Typisierte Tauri IPC-Wrapper (invoke / listen)
-│   └── styles/                         # Design-Tokens, Dark/Light Theme
+│   │   ├── layout/                     # Sidebar, Header, InspectorDrawer
+│   │   ├── explorer/                   # Visual FolderTree, selective sync checkboxes, pin badges
+│   │   ├── modes/                      # 3-Mode Switcher (Stream | Hybrid | Mirror)
+│   │   ├── transfers/                  # Live TransferHub, bandwidth sparkline, activity feed
+│   │   ├── conflicts/                  # Side-by-side ConflictModal resolution dialog
+│   │   └── onboarding/                 # Cloud provider OAuth wizard & 1-click Crypt setup
+│   ├── stores/                         # Zustand stores (remotes, transfers, conflicts, capabilities)
+│   ├── lib/                            # Typed Tauri IPC wrappers (invoke)
+│   └── styles/                         # Global Tailwind styles & scrollbar tokens
 │
 ├── src-tauri/                          # 🦀 Backend & Core Daemon (Rust)
 │   ├── src/
-│   │   ├── main.rs / lib.rs            # Tauri Setup, System-Tray, Lifecycle-Management
-│   │   ├── engine/                     # rclone rcd Prozess-Manager & JSON-RPC Client
-│   │   ├── mount/                      # VFS Mount Orchestrator (FUSE3 / WinFsp)
-│   │   ├── sync/                       # Mirror-Scheduler, Bisync-Runner & Conflict-Detector
-│   │   ├── watcher/                    # Echtzeit-Dateisystem-Watcher (notify + Debouncer)
-│   │   ├── security/                   # OS-Keyring Integration & rclone.conf Verschlüsselung
-│   │   └── ipc/                        # Tauri Commands & Echtzeit-Event-Emitter ans UI
+│   │   ├── main.rs / lib.rs            # Tauri setup, IPC registration, unit tests
+│   │   ├── engine/                     # rclone rcd process manager & JSON-RPC transport metadata
+│   │   ├── mount/                      # VFS Mount orchestrator (FUSE3 / WinFsp)
+│   │   ├── sync/                       # Mirror policies, storage modes & direction models
+│   │   ├── watcher/                    # Real-time filesystem watcher config (notify + debouncer)
+│   │   ├── security/                   # OS Keyring integration & rclone.conf encryption status
+│   │   └── ipc/                        # Typed Tauri command handlers
 │   ├── Cargo.toml
 │   └── tauri.conf.json
 │
-├── architecture/                       # 🏛️ Verbindliche Architektur-Standards (00-04)
-├── memory/                             # 🧠 Projektstatus, Meilensteine & Blackbox
-└── playbooks/                          # 📋 Entwicklungs- & Release-Checklisten
+├── architecture/                       # 🏛️ Mandatory Architectural Specifications (00-04)
+├── memory/                             # 🧠 Project State, Milestones & Blackbox Log
+└── playbooks/                          # 📋 Engineering SOPs & Lexicon Verification Script
 ```
 
 ---
 
-## 3. UI/UX-Design-Richtlinien („Anti-Insync-Look“)
+## 3. UI/UX Design Guidelines ("Anti-Insync Look")
 
-1. **Drei-Spalten-Cockpit ohne Popup-Chaos:**
-   - **Linke Spalte (Navigation & Remotes):** Verbundene Cloud-Konten mit Anbieter-Icon, Speicherplatz-Balken und schnellem „+ Cloud verbinden“-Button.
-   - **Mittlere Hauptfläche (Workspace & Baumansicht):** Oben der **3-Modi-Umschalter** (`☁️ Stream Mount` | `📌 Hybrid Pinning` | `💾 Full Offline Mirror`), darunter der schnelle, virtualisierte Ordnerbaum mit Echtzeit-Status-Badges (`Lokal gespiegelt`, `Nur Stream`, `Verschlüsselt`, `Synchronisiert gerade...`).
-   - **Rechtes / Unteres Panel (Inspector & Transfer-Hub):** Kontext-Einstellungen für den ausgewählten Ordner (Spiegel-Richtung, Ignore-Regeln, Cache-Limit) sowie der ausklappbare Live-Transfer-Monitor.
-2. **Hintergrund-First (Tray-Modus):**
-   - Das Schließen des Hauptfensters (`X`) beendet **nicht** die Synchronisation oder bestehende Mounts, sondern minimiert Strata lautlos in den System-Tray.
-   - Ein Klick auf das Tray-Icon öffnet ein kompaktes **Quick-Popover** (aktuelle Übertragungsrate, Pause/Resume-Button, Direktlink zum gemounteten Laufwerk im Explorer/Dateimanager).
+1. **Three-Column Cockpit Without Popup Clutter:**
+   - **Left Column (Navigation & Remotes):** Connected cloud accounts with provider icon, storage usage bar, and quick "+ Connect Cloud Provider" button.
+   - **Center Workspace (Mode Switcher & Folder Tree):** Top **3-Mode Segmented Switch** (`☁️ Stream Mount` | `📌 Hybrid Smart Pinning` | `💾 Full Offline Mirror`), followed by the responsive folder tree with real-time status badges (`Local Mirror`, `On-Demand Stream`, `crypt`, `Syncing...`, `Conflict`).
+   - **Right / Bottom Panels (Inspector & Transfer Hub):** Context-aware policy controls for the active remote (mirror direction, soft-delete archive guard, VFS cache quota, `.strataignore` rules) and the expandable live transfer drawer.
+2. **Background-First (System Tray Operation):**
+   - Closing the main window (`X`) does **not** terminate active synchronization jobs or mounted drives; instead, Strata minimizes cleanly to the system tray.
+   - Clicking the tray icon opens a compact quick-status popover with live transfer speed, pause/resume controls, and direct links to open mounted drives in the native file manager.
