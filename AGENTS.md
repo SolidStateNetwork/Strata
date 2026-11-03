@@ -1,52 +1,64 @@
-# 🤖 AGENTS.md — AI Engineering Manual & Governance for Strata
+# 🤖 AGENTS.md — Mandatory AI Engineering Directive for Strata
 
-> **MANDATORY DIRECTIVE FOR ALL AI AGENTS (Antigravity, Claude Code, Cursor, Windsurf, Copilot, Codex):**  
-> This repository (`SolidStateNetwork/Strata`) is a **standalone, public open-source software project (GPL-3.0)** governed by a central **Architecture Lexicon & Long-Term Memory (`memory/`)**.  
-> **Never modify code or architecture without reading and updating this lexicon!**
-
----
-
-## 1. Strict Single-Repository Isolation & Language Policy
-
-1. **Strict Single-Repository Boundary (Zero Repo-Hopping):**
-   - Operate **100% exclusively** inside the currently open repository working directory (`CWD`).
-   - **Never** read, modify, run git commands, or execute scripts in any sibling directory (`../`) or on external servers. Every file outside `CWD` is strictly out of scope.
-   - Keep **Strata** a 100% self-contained, standalone product with zero references to other repositories or internal network domains.
-2. **100% English Repository Standard:**
-   - All repository files (`README.md`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `memory/*`, `architecture/*`, `playbooks/*`, scripts, source code, comments, tests, and commit messages) must be written in **100% idiomatic English**.
-   - Only explicit i18n locale dictionaries (when added in the future) may contain non-English strings.
-   - Communicate with the user in the chat in **German** while keeping 100% of repository files in English.
+> **MANDATORY ENFORCEMENT FOR ALL AI AGENTS (Antigravity, Gemini, Claude Code, GitHub Copilot, Cursor, Windsurf, Codex):**
+>
+> - **Read these rules BEFORE taking any action.**
+> - **Follow them at ALL times with ZERO exceptions.**
+> - **Commit and push after EVERY change in the exact same turn.**
+> - **No batching. No postponing. No skipping steps.**
 
 ---
 
-## 2. The Mandatory 5-Step Engineering Protocol
+## 1. Core Operating Rules (Zero Exceptions)
 
-### Step 1: Load Context (Read First)
-Before writing new code or modifying existing modules, **always** read:
-1. [`memory/PROJECT_STATE.md`](./memory/PROJECT_STATE.md) — Which modules exist and what is their current status?
-2. [`memory/BLACKBOX.md`](./memory/BLACKBOX.md) — What were the most recent engineering steps (`[BB-XXX]`) and which Architecture Decision Records (`ADR-XXX`) apply?
-3. [`memory/MILESTONES.md`](./memory/MILESTONES.md) — Which milestone (`M0.x`–`M5.x`) is currently in progress?
+### 1.1 Read First — Act Second
+- Before creating, modifying, or deleting any file, **always** read this `AGENTS.md` directive and the relevant project documentation (`README.md`, `architecture/`, `memory/`).
+- Never guess architectural conventions or skip verification steps.
 
-### Step 2: Verify Architectural Compliance (Check Standards)
-Every implementation must strictly follow the specifications in [`architecture/`](./architecture/):
-- [`architecture/00-product-vision.md`](./architecture/00-product-vision.md) — The 3-layer storage model and core principles of Strata.
-- [`architecture/01-tech-stack-and-monorepo.md`](./architecture/01-tech-stack-and-monorepo.md) — Tauri v2 (Rust) + React 19 / TypeScript + Tailwind CSS.
-- [`architecture/02-rclone-engine-and-vfs-architecture.md`](./architecture/02-rclone-engine-and-vfs-architecture.md) — Control via `rclone rcd` JSON-RPC, VFS caching, `FUSE3` (Linux) & `WinFsp` (Windows).
-- [`architecture/03-sync-and-mirror-modes.md`](./architecture/03-sync-and-mirror-modes.md) — The 3 storage modes (`Virtual Stream`, `Full Offline Mirror` [`2-Way`, `Local→Cloud`, `Cloud→Local`], `Hybrid Smart Pinning`) & native Rust `notify` real-time watcher.
-- [`architecture/04-security-and-zero-knowledge.md`](./architecture/04-security-and-zero-knowledge.md) — OS Keyring encryption & 1-click `rclone crypt`.
+### 1.2 Strict Single-Repository Isolation (CWD Only)
+- Operate **100% exclusively** inside the currently open repository working directory (`CWD`).
+- **Never** read, modify, execute git commands, or run builds/scripts in any parent or sibling directory (`../`).
+- Keep **Strata (`SolidStateNetwork/Strata`)** a 100% self-contained, standalone open-source project (GPL-3.0) with zero references to external repositories or private network environments.
 
-### Step 3: Clean Cross-Platform Implementation (Build & Verify)
-- Write platform-independent code for **Linux** and **Windows** (no hardcoded path separators; use clean `#[cfg(target_os = "...")]` encapsulation in Rust).
-- After every code change, verify that the backend (`cargo check` / `cargo test`), frontend (`npm run typecheck` / `npm run build`), and lexicon verifier (`python playbooks/scripts/verify-lexicon-completeness.py`) pass with 0 errors.
+### 1.3 Language Policy (Chat: German | Repository: 100% English)
+- **Chat Communication:** Always communicate with the user in the chat in **German**.
+- **Repository Content:** Write **100% of all repository files** (`README.md`, `AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `architecture/*`, `memory/*`, `playbooks/*`, source code, comments, tests, and Git commit messages) in **idiomatic English**.
+- Only dedicated end-user i18n locale dictionaries (when added) may contain non-English translations.
 
-### Step 4: Public Repository Security Guardrails (Clean-Room Policy)
-Because this repository is **public** on GitHub, the following rules apply without exception:
-- **Zero-Secret Policy:** NEVER commit real OAuth secrets, `rclone.conf` files, API tokens, private keys, or `.env` files to Git.
-- **Zero-Personal-Data Policy:** NEVER leave local workstation paths (such as `/home/<username>/...`), private server IPs, or personal email addresses in code, comments, or documentation.
+### 1.4 Mandatory Same-Turn Post-Change Protocol
+- After **every** modification to the repository (code, configuration, documentation, or scripts), you **must** verify, stage, commit, and push the changes to `origin main` **in the exact same turn**.
+- **No batching. No postponing. No skipping steps.**
+- Never leave uncommitted changes at the end of a turn, and never defer commits with phrases like *"I will commit this later"*.
 
-### Step 5: Documentation & Blackbox Write-Back (Write Back & Push)
-After completing **any** feature or milestone, you must **in the same turn**:
-1. Update the module status in [`memory/PROJECT_STATE.md`](./memory/PROJECT_STATE.md).
-2. Check off completed tasks (`[x]`) in [`memory/MILESTONES.md`](./memory/MILESTONES.md).
-3. Prepend a new dated log entry `[BB-XXX]` at the top of [`memory/BLACKBOX.md`](./memory/BLACKBOX.md).
-4. Commit the changes cleanly and push to GitHub via `git push origin main`.
+---
+
+## 2. Project Context & Architecture Standards (Strata)
+
+**Strata** is a cross-platform open-source cloud sync and virtual drive client for **Linux** and **Windows**, built with:
+- **Backend / Core Daemon:** **Tauri v2 (Rust)** (`src-tauri/`) managing `rclone rcd` via authenticated local JSON-RPC, OS Keyring credential encryption, `FUSE3` (Linux) / `WinFsp` (Windows) virtual mounts, and native `notify` real-time filesystem watching.
+- **Frontend UI:** **React 19 + TypeScript + Tailwind CSS + Zustand + Vite** (`src/`) implementing a 3-column desktop cockpit (`Stream Mount`, `Hybrid Smart Pinning`, `Full Offline Mirror`).
+- **Architecture Specifications:** Stored in [`architecture/00-product-vision.md`](./architecture/00-product-vision.md) through [`architecture/04-security-and-zero-knowledge.md`](./architecture/04-security-and-zero-knowledge.md).
+- **Project State & Roadmap:** Tracked in [`memory/PROJECT_STATE.md`](./memory/PROJECT_STATE.md), [`memory/MILESTONES.md`](./memory/MILESTONES.md), and [`memory/BLACKBOX.md`](./memory/BLACKBOX.md).
+- **Public Clean-Room Security Policy:**
+  - **Zero Secrets:** Never commit real OAuth tokens, `rclone.conf` files, API keys, private keys, or `.env` files.
+  - **Zero Workstation Paths:** Never commit local user paths (e.g., `/home/<username>/...`), private IP addresses, or personal email addresses.
+
+---
+
+## 3. Mandatory Post-Change Checklist (Execute Before Ending Every Turn)
+
+Whenever you modify any file in this repository, execute this checklist **in full and in order** within the same turn:
+
+- [ ] **1. Scope & Clean-Room Check:** Confirm all changes are strictly inside `CWD`, written in 100% English, and free of secrets or local user paths.
+- [ ] **2. Project Documentation Sync:** If a feature, module, or milestone changed, update [`memory/PROJECT_STATE.md`](./memory/PROJECT_STATE.md), [`memory/MILESTONES.md`](./memory/MILESTONES.md), and [`memory/BLACKBOX.md`](./memory/BLACKBOX.md).
+- [ ] **3. Build & Verification Check:**
+  - Run `python playbooks/scripts/verify-lexicon-completeness.py` (must exit `0`).
+  - When frontend (`src/`) changed: run `npm run typecheck` and `npm run build`.
+  - When Rust backend (`src-tauri/`) changed: run `cargo check --manifest-path src-tauri/Cargo.toml` / `cargo test --manifest-path src-tauri/Cargo.toml`.
+- [ ] **4. Same-Turn Git Commit & Push:**
+  - Stage all changes: `git add -A`
+  - Commit with a clear English Conventional Commit message: `git commit -m "<type>(<scope>): <summary>"`
+  - Push immediately: `git push origin main`
+  - Verify clean state: `git status -sb` must report a clean working tree synced with `origin/main`.
+
+> **REMEMBER:** **No batching. No postponing. No skipping steps.** Every turn that modifies the repository must end with a verified commit and push to `origin main`.

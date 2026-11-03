@@ -25,6 +25,7 @@ REQUIRED_FILES = [
     "AGENTS.md",
     "CLAUDE.md",
     "GEMINI.md",
+    ".github/copilot-instructions.md",
     "CONTRIBUTING.md",
     "SECURITY.md",
     ".githooks/pre-commit",
@@ -50,7 +51,6 @@ FORBIDDEN_PATHS = [
     ".windsurfrules",
     ".cursor",
     ".agents",
-    ".github/copilot-instructions.md",
 ]
 
 FORBIDDEN_PATTERNS = [

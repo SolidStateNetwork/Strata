@@ -34,6 +34,17 @@
 
 ## 📜 Chronological Engineering Log (Newest First)
 
+### [BB-006] 2026-11-03 22:38 (CET) — [ARCH-LEXICON] Standardized AI Enforcement Directives & Mandatory Same-Turn Post-Change Protocol
+- **Actor:** Antigravity AI (Gemini 4 Argon)
+- **Type:** `ARCHITECTURE` | `SECURITY`
+- **Affected Modules:** `ARCH-LEXICON` (`AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `playbooks/scripts/verify-lexicon-completeness.py`)
+- **Goal / Context:** Standardize and enforce strict AI governance across `AGENTS.md`, `GEMINI.md`, `CLAUDE.md`, and `.github/copilot-instructions.md` with explicit read-before-act rules, single-repository isolation, language policy (Chat: German, Repository: 100% English), and the mandatory same-turn commit-and-push checklist ("No batching. No postponing. No skipping steps.").
+- **Steps Performed:**
+  1. Updated `AGENTS.md` with the core mandate, strict CWD isolation, language standard, and explicit same-turn Post-Change Checklist.
+  2. Updated `GEMINI.md` and `CLAUDE.md` and created `.github/copilot-instructions.md` referencing `AGENTS.md` with the explicit Post-Change Checklist.
+  3. Registered `.github/copilot-instructions.md` in `REQUIRED_FILES` inside `playbooks/scripts/verify-lexicon-completeness.py`.
+- **Verification:** Verified `python playbooks/scripts/verify-lexicon-completeness.py` (`EXIT 0`) and pushed to `origin main`.
+
 ### [BB-005] 2026-11-03 10:02 (CET) — [ARCH-LEXICON] Single-Repository Decoupling, Structural Consolidation & 100% English Standardization
 - **Actor:** Antigravity AI (Gemini 4 Argon)
 - **Type:** `ARCHITECTURE` | `SECURITY`
